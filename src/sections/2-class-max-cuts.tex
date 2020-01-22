@@ -1,0 +1,200 @@
+\section{2-Approximations algorithms for Max-cut}
+we will now analyze three standard approximation algorithms for the max cut problem.
+
+\subsection{Local search}
+Local search is a widely used heuristic method to deal with hard problems.
+Here we can taste how it can be deployed to deal with approximation algorithms.
+For an instance $I$ of a problem $ \Pi $, let $\mathcal{S}(I_{\Pi})$ denote the set of feasible solutions for the instance $I$.
+Let $S$ be a solution of the problem instance $I$, then we use the term neighborhood of $S$ to be  the  set  of  all solution $S'$ such that $S'$ can be obtained from $S$ via some local moves.
+This idea is subsumed by the following procedure:
+\begin{enumerate}
+  \item find some form of "good" starting solution $S_0$;
+  \item devise an "improving step" to build a better solution;
+  \item repeat untill we are stuck with a non improving solution;
+\end{enumerate}
+
+In the case of MAX-CUT the algorithm is the following:
+
+\begin{algorithm}[H]
+\SetAlgoLined
+\SetKwInOut{Input}{Input}
+\SetKwInOut{Output}{Output}
+\Input{A graph $G=(V,E)$ undirected and unweighted.}
+\Output{a solution $S$ that is $C \subset V$.}
+\caption{MAX-CUT via Local Search}
+$S_0 =\{\}$;\\
+\While{$\exists v \in V$ s.t. moving $v$ in the cut strictly increases $|E(C,\bar{C})|$}
+{
+	\If{$V \in S$}{$S = S \setminus \{u\}$}
+	\Else{$S = S \cup \{u\}$}
+}
+\end{algorithm}
+\bigskip
+
+The two following theorems state formally termination and approximation ratio achieved by local search.
+
+\begin{theorem}{\textbf{MAX-CUT via Local Search's Termination.}} 
+\\
+ The procedure based on local search to compute an approximate solution for a MAX-CUT instance terminates.
+\end{theorem}
+\begin{proof}
+  each step increases $|E(S,\bar{S})|$ by $1$. We start from an initial solution $ S_0 = \{\} $ and for sure $|E(C,\bar{C})|$ cannot become greater than the number of edges of the graph $ |E| = m $.
+  Trivially the procedure takes $m$ steps to emit a solution.
+  \qed
+\end{proof}
+
+\begin{theorem}{\textbf{MAX-CUT via Local Search's approximation ratio is 2.}}
+\\
+  The procedure based on local search to compute an approximate solution for a MAX-CUT instance gives a solution that is in the worst case half the optimal solution.
+\end{theorem}
+\begin{proof}
+  Let $S$ be the approximate solution returned by the procedure.
+  We want to assess a ratio between the cost of the optimum and the cost of the solution found by local search.
+  As it usually happens in these cases, the cost of the optimal solution is not known and so an upperbound is used in its place:
+  \[ \frac{COST(S^{*})}{COST(S)} \leq \frac{COST(UB)}{COST(S)} \]
+  
+  Here and in the rest of this section we take $|E|=m $ as $COST(UB)$ so that in all the three theorems stating that the achieved approximation ratio is 2, the proof reduces to show that:
+  \[ \frac{m}{COST(S)} \leq 2 \]
+  To conclude the proof we need to observe that for each node $v \in V$ is guaranteed that at least $\frac{d_v}{2}$ incident edges to $ v $ belongs to $|E(C,\bar{C})|$, where $ d_v $ is the degree of the node $ v $ that is the number of incident edges to $ v $.\\
+  Now let the cut at the local optimum computed by the local search procedure be $ S $ and take a node $ u $ with degree $ d_u $. If the vertex $u$ is in the cut for the solution $S$ then some of its neighbors are in $C$ and some other in $\bar{C}$ but for sure there cannot be more then half the degree of $u$ edges crossing the cut otherwise $S$ would not be a local optimum.
+  So we can write:
+  \begin{align}
+  cut\, size & = COST(S) \\
+             & = \frac{1}{2} \sum_{v \in V} \#\, edges\,incident\,to\,v \,crossing\, the\, cut \\
+             & \geq \frac{1}{2} \frac{d_v}{2}  \\
+             & = \frac{1}{2} \frac{2m}{2} \,\,\,\, \text{since} \sum_{v \in V} d_v = 2m\\
+             & = \frac{m}{2}
+  \end{align}
+  \qed
+  
+  
+  
+\end{proof}
+
+This strategy takes $\mathcal{O}(poly\, n)$ times in the unweighted case. Unfortunately it is exponential in case of large weights associated to the edges. This explains why we may need other strategies.
+
+
+% -------------------------------------------------------------------------
+
+\subsection{Greedy}
+A greedy strategy is an approach that wants to make the best move at each step.
+The greedy strategy and the local search one are somehow similar in the sense that both aims to reach the global optimum passing through many local optima.
+The two differ in how the next move to take is chosen and how the space of neighbor solutions is explored.
+In greedy algorithms an ordering is often imposed by some kind of sorting before procedure starts computing over the collection of objects it is dealing with.\\
+For greedy MAX-CUT the two subsets of $V$ induced by the notion of cut of a graph are imagined as two bins. After having fixed the order to scan the vertices of the input graph we start picking them one by one and put them in the bin such that $ |E(C,\bar{C})| $ is maximized at each step.\\
+
+\begin{algorithm}[H]
+	\SetAlgoLined
+	\SetKwInOut{Input}{Input}
+	\SetKwInOut{Output}{Output}
+	\Input{A graph $G=(V,E)$ undirected and unweighted.}
+    \Output{a solution $S$ that is $C \subset V$.}
+	\caption{Greedy MAX-CUT}
+	sort $ V $;\\
+	$C =\{\}$;\\
+	$\bar{C} =\{\}$;\\
+	Sort the vertices $ \in V $;\\
+	\ForEach{vertex  $ v \in V $}{put the v in the bin that maximizes $ |E(C,\bar{C})| $;}
+\end{algorithm}
+\bigskip
+
+\begin{theorem}
+  \textbf{Greedy MAX-CUT time complexity is  $\mathcal{O}( |V|\log |V|)$}
+\end{theorem}
+\begin{proof}
+  trivially, the time complexity is dominated by the time it takes to sort the vertices of $ G $
+  \qed
+\end{proof}
+
+\begin{theorem}{\textbf{Greedy MAX-CUT is a 2-approximation}}
+\end{theorem}
+\begin{proof}
+  Define the notion of responsible vertex that is the endpoint of an edge coming later in the fixed ordering 
+  and the relative quantity $r_i =$ "\#edges $v_i$ is responsible for".\\
+  Since every edge has exactly one responsible vertex it has to be $\sum_{v \in V} r_i = m$
+  \begin{claim}
+  	when $ v_i $ is added to a bin, at least $ \frac{r_i}{2}$ edges are added to the cut.\\
+  	This is due to the fact that the other vertices
+  	adjacent to the $ r_i $ edges that $ v_i $ is responsible for have already been assigned to either $C$ or $ \bar{C} $. 
+  	The set which contains the most endpoint vertices of these r i edges must contain at least $ \frac{r_i}{2} $ endpoint vertices.
+
+  \end{claim}
+  Since we are greedy $ v_i $ must go to the other set. Thus it is proved that every time we process a responsible vertex we are adding at least $ \frac{r_i}{2}$ edges to the cut. Concluding:
+  \begin{align}
+  	COST(S) & = \frac{1}{2} \sum_{v \in V} \#\, edges\,added\,by\,each \,responsible \,vertex\,\\ 
+			& \geq \sum_{v \in V} \frac{r_i}{2}  \\
+			& \geq \frac{m}{2}
+\end{align}
+  \qed
+\end{proof}
+
+% -------------------------------------------------------------------------
+
+\subsection{Randomized}
+Last but not least it is time for the simple randomized algorithm that provide the same approximation ration with respect to the other two already presented.
+
+\begin{algorithm}[H]
+	\SetAlgoLined
+	\SetKwInOut{Input}{Input}
+	\SetKwInOut{Output}{Output}
+	\Input{A graph $G=(V,E)$ undirected and unweighted.}
+	\Output{a solution $S$ that is $C \subset V$.}
+	\caption{Randomized MAX-CUT}
+	$C =\{\}$;\\
+	\ForEach{vertex  $ v \in V $}{put $ v $ in $C$ with probability $ \frac{1}{2}$}
+\end{algorithm}
+\bigskip
+
+\begin{theorem}{} 
+	\textbf{Randomized MAX-CUT is a 2-approximation}
+\end{theorem}
+\begin{proof}
+	define a random indicator variable:
+\begin{equation*}
+	X_{e} = 
+	  \begin{cases}
+	    1 &  \text{if} e \in E(C,\bar{C}), \forall e \in E,\\
+        0 &  \text{otherwise}.
+	  \end{cases}
+\end{equation*}
+then by random indicator variables properties it follows:
+\[ \mathbf{E}[X_{e}] = Pr(X_{e} = 1) = \frac{1}{2} \]
+so that we can estimate the expected number of edges crossing the cut as:
+\begin{align}
+\mathbf{E}[E(C,\bar{C})] & = \mathbf{E}[\sum_{e \in E} X_{e}] \\
+						 & = \sum_{e \in E} \mathbf{E}[X_{e}] \\
+						 & = \frac{|E|}{2} = \frac{m}{2}
+\end{align}
+\qed
+\end{proof}
+
+
+% -------------------------------------------------------------------------
+\subsection{On the upperbound used so far}
+In this parte we would like to remark the fact that any approximation algorithm can achieve a better approximation ration than $ 2 $ if $ |E|=m $ is used as upper bound.\\
+The take home message here is that if we cannot obtain better approximation result sometimes it may be the case that other upper bounds are investigated.
+The make more clarity in the following:
+\begin{claim}
+	There are instances of the MAX-CUT problem for which:
+	\[COST(S^{*}) \approx \frac{m}{2} = \frac{1}{2} COST(UB) \]
+\end{claim}
+\begin{proof}
+Consider $ K_{2n} $, the complete graph on $ 2n $ nodes. By a trivial combinatory count we get that $ m = |E|= n(2n-1) \approx 2n^2 $\\
+For any cut in $ K_{2n} $ such that $ |C|= z $, $ |\bar{C}|= 2n-z $ each of the vertices in $ C $ has $ 2n-z $ edges crossing the cut to reach its other endpoint that stays in $ \bar{C} $.\\
+Hence the total number of edges in the cut is $ z(2n-z) $.\\
+This quantity is maximized for $ i=n $ and thus the largest cut in the graph has $ n^2 $ edges.\\
+Now recalling that $ COST(UB)=m $ and for $ K_{2n} $ we have $ m=n(2n-1) $ it follows:
+\[ \frac{COST(UB)}{COST(S^{*})} = \frac{n(2n-1)}{n^2} = 2 - \frac{1}{n}  \]
+Which gets arbitrary close to $ 2 $ as $ n $ increases.
+Concluding: keeping $ COST(UB)=m $ in some cases even the optimal algorithm could never be considered better than a 2-approximation.
+\qed
+\end{proof}
+
+\subsection{Some history}
+The three 2-approximation have been known in the literature for many years.
+Other invesigations led to linear programming based techniques that in the end do not take any significant improvements to the problem.
+In 1994 Goemans and Williamsons gave a 0.828-approximation algorithm, by exploiting semidefinite programming algorithms. 
+Moreover assuming the "unique games conjecture" this approximation ratio is optimal unless $P=NP$.
+The treatment of this last SDP approximation is out of the scope of this survey. 
+In the next sections the spotlights will be on the spectral approach devised by Trevisan in 2008.
+His algorithm achieved an approximation ration of 0.513. The analysis was improved by Soto up to a ratio of at least 0.614 2018.

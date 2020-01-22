@@ -1,0 +1,44 @@
+\documentclass[runningheads]{llncs}
+
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage[normalem]{ulem}
+\usepackage{amsmath,amssymb}
+%\usepackage{algorithm}
+%\usepackage[noend]{algpseudocode}
+\usepackage[titlenumbered,ruled]{algorithm2e}
+\usepackage[utf8]{inputenc}
+
+
+\usepackage{float}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\title{Max-cut problem: a quest in graph spectra}
+\author{Lapo Toloni}
+\institute{University of Pisa, Deparment of Computer Science \\
+\email{l.toloni@studenti.unipi.it\\
+}}
+
+
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+This survey paper presents an overview of graph cut problems. The main focus is on MAX-CUT, a famous network related problem known to be NP-HARD.
+The three classical and trivial 2-approximation algorithms are given. Then a brief introduction of spectral graph theory is presented, showing how to exploit algebraic properties of matrices associated to graphs to achieve better approximation ratios for MAX-CUT.
+\end{abstract}
+
+
+\input{sections/1-intro.tex}
+\input{sections/2-class-max-cuts.tex}
+\input{sections/3-spectral-graph-theory.tex}
+\input{sections/4-spectral-max-cut.tex}
+
+
+\input{bib.tex}
+
+
+\end{document}

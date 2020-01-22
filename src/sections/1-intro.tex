@@ -1,0 +1,46 @@
+\section{Introduction: Graphs, cuts and hardness of approximation}
+
+\subsection{MAX-CUT Problem}
+Graphs are a mathematical construction typically used to model connections and relations between things. \\
+Sticking to the undirected case, a graph is a pair of sets $G=(V,E)$ where $V$ represents the collection of things to be connected, commonly called vertices, while $E$ is a set of unordered pairs of elements of $V$, modelling the relation that exists between the objects of our universe.
+
+Given an undirected graph $G = (V,E)$, a cut in $G$ is a partition of the vertices of $ G $ graph into two disjoint subsets $ C,\bar{C} \subseteq V$ such that $\bar{C} = V \setminus C $, $ C \cap \bar{C} = \emptyset$ and $ C \cup \bar{C} = V $.
+Let $E(C,\bar{C})$ denote the set of edges with one vertex in $C$ and one vertex in $\bar{C}$. \\
+The MAX-CUT problem consists in finding a cut $C$ that maximizes $|E(C,\bar{C})|$, namely the number of edges crossing the cut. \\
+A weighted version of MAX-CUT also exists and there things get more complicated.	
+In these instances we are also given a function $w : E \rightarrow R$ that assigns a weight to every edge, so that the problem is to find a cut with maximum weight. The MAX-CUT problem is NP-hard.
+It is interesting to recall the contrast with the MIN-CUT problem, which admits a linear time solutions by using a randomized algorithm.
+
+\subsection{Approximation Algorithms}
+%A PTAS is an algorithm which takes an instance of an optimization problem and a parameter $ \epsilon > 0  $ and, in polynomial time, produces a solution that is within a factor $ 1 + \epsilon  $of being optimal (or $ 1 − \epsilon  $ for maximization problems)
+MAX-CUT as many other real life problems are optimization problems.
+In the standard complexity theory formulation, problems are given in a decisional form, meaning that what is asked is the existence of at least one element in the space of solutions.
+In an optimization framework the task is to build the best solution among all the feasible ones.
+Infact a large number of these optimization problems are known to be in NP-HARD that is no polynomial time, or space, algorithm computing an exact solution is known, and probably it did not even exist.\\
+
+However their existence needs to be taken into account since lines of attack serve to deal with their complexity and make them more tractable.
+One possible plan is to exploit the notion of approximate solution.
+Approximate algorithm theory is the branch of complexity theory that let formalize the notion of approximate solution for optimization problems.
+More precisely we have:
+\begin{itemize}
+	\item $ \Pi $, an optimization problem whose solving algorithm is in NP-HARD,
+	\item $ S^{*} $, an optimal solution for the instance $ I $ of $ \Pi $,
+	\item $ S $, an approximate solution for the instance $ I $ of $ \Pi $,
+	\item a function $ COST: \mathcal{S}(I_{\Pi}) \rightarrow \mathbb{N} $, where $ \mathcal{S}(I_{\Pi})$ is the space of solution of the optimization problem $ \Pi $ with instance $ I $. ($ \mathcal{S}(I_{\Pi}) \rightarrow \mathbb{R} $ in the continuous case)
+\end{itemize}
+The goal becomes finding a procedure that given and instance $ I $ of $ \Pi $ computes an approximation solution $ S $ such that:
+\begin{align}
+	\frac{COST(S)}{COST(S^*)} \leq r && \text{if we have a minimization problem} \\
+	\frac{COST(S^*)}{COST(S)} \leq r && \text{if we have a maximization problem}
+\end{align}
+
+In both cases a lower value for $ r $ implies a better algorithm.\\
+In general is difficult to estimate the value of $ COST(S^{*}) $. So as we will see in the proves in the next sections we will need to use an upperbound to $ COST(S^{*}) $ in case of 
+maximization problems (or a lower bound in case of minimization problems). 
+So by letting $ UB $ be a solution yielding a cost that is an upperbound of the optimal solution we have:
+\[ COST(S) \leq COST(S^{*}) \leq COST(UB) \]
+And we will prove the theorems stating the value of $ r $ by showing:
+\[ 
+\frac{COST(UB)}{COST(S)} \leq r 
+\Longleftrightarrow
+COST(S) \geq \frac{COST(UB)}{r} \]

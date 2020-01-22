@@ -1,0 +1,257 @@
+% 1 linear algebra concepts
+% 2 examples of spectrum of a graph
+% 3 meaning of extremal eigenvalues of the laplacian
+
+\section{Spectral Graph Theory}
+Spectral graph theory is a branch of graph theory that exploits linear algebra tools to investigate combinatorial properties of graphs and to find better solutions to many very well-known graph algorithms. It is astonishing how the mixing of two apparently unrelated mathematical fields may take such improvements. \\
+Vectors and matrices are the bread and butter of linear algebra, in addition to a number of useful concepts and algorithms, such as determinants, \textbf{eigenvalues, eigenvectors}, and solutions to systems of linear equations.
+The natural application of linear algebra to graph theory comes up when we try to relate a matrix to a graph and then interpreting linear algebra concepts in the graph-theoretic framework.\\
+The easiest representation of a graph as a matrix is via its \textbf{adjacency matrix}. Such a matrix is symmetric and has dimension $ |V| \times |V| $. Its entries are $ 0 $ or $ 1 $ according to the presence of an edge between the two nodes relative to that element of the matrix.
+It is interesting to think of $ |V| $-dimensional boolean vectors as a bipartition of the vertices that indeed is a \textbf{cut}.  
+
+\subsection{Basic linear algebra notions}
+Before diving in some of the results coming out from spectral graph theory we quickly review some basic linear algebra definitions and theorems that will be useful in the next part.
+The proves of the two main theorems can be found in \cite{trevi-notes}.
+
+\begin{definition}{\textbf{Symmetric Matrix}} \\
+	A square matrix $ M $ on a field $ \mathbb{K} $ is symmetric if and only if:
+	\[ M = M^T \]
+	where $ M^T $ is the transpose of $ M $, that is the matrix obtained by swapping the rows and the columns of $ M $
+\end{definition}
+
+\begin{definition}{\textbf{Inner Product}} \\
+a function $ <\cdot,\cdot> : \mathbb{K}^n \times \mathbb{K}^n \longrightarrow \mathbb{K}$ from vectors to scalar such that:
+\[ <\mathbf{v},\mathbf{u}> = \mathbf{v}^T\mathbf{u} = \sum_{i=1}^{n}v_{i}^{T}u_i \]
+\end{definition}
+Geometrically speaking the inner product is the length of the projection of the first vector onto the second, multiplied by the length of the second.
+Two vectors are said to be orthogonal, indicated as $ \mathbf{v} \bot \mathbf{u} $, if their inner product is 0
+
+\begin{definition}{\textbf{Eigenvalues and eigenvectors}} \\
+Let $ M $ be a square matrix on a field $ \mathbb{K} $, $ \lambda \in \mathbb{K} $ a scalar and $ mathbf{v} \in \mathbb{K}^n \setminus {\mathbf{0}}$ a vector, then if we have
+\[M\mathbf{v}=\lambda\mathbf{v}\]
+we say what $ \lambda $ is an eigenvalue of $ M $ and that $ \mathbf{v} $ is an \em{eigenvector} of $ M $ corresponding to the \em{eigenvalue} $ \lambda $.
+\end{definition}
+
+\begin{theorem}{\textbf{Spectral Theorem}} \\
+Let M $\in \mathbb{R}^{n \times n}$ be a symmetric matrix with real-valued entries, then there are n real numbers (not necessarily distinct) $\lambda_1, \dots, \lambda_n$ and n orthonormal real vectors $\in \mathbb{R}$ such that $\mathbf{x}_i$ is an eigenvector of $\lambda_i$.
+\end{theorem}
+
+\subsection{Graph spectrum and bipartite graphs}
+The most common matrices we will associate to graphs will be symmetric and real, so we would apply the spectral theorem on them to build an orthonormal basis of eigenvectors. However it is not granted that these eigenvalues would provide any information about graph properties. The following example instead shows how the eigenvalues of a matrix are a mirror of the graph's topology
+
+\begin{proposition}{\textbf{Spectral characterization of bipartite graphs.}} \\
+If $ G $ is a bipartite graph and $ \lambda $ is an eigenvalue of $ A $, adjacency matrix of $ G $, with multiplicity $ k $, then $ -\lambda $ is an eigenvalue of $ A $ with multiplicity $ k $.
+\begin{proof}
+If $ G $ is a bipartite graph, then there exists $ \pi $ a permutation of the rows and the columns of $ A $, such that
+\[ \pi A = 
+\begin{pmatrix}
+0   & B \\
+B^T & 0\
+\end{pmatrix}
+\]
+Let $ \mathbf{u}= \begin{pmatrix}
+x \\y
+\end{pmatrix} $ with eigenvalue $ \lambda $. Then
+$
+\begin{pmatrix}
+	0   & B \\
+	B^T & 0\
+\end{pmatrix}
+\begin{pmatrix}
+x \\
+y
+\end{pmatrix}
+= \lambda
+\begin{pmatrix}
+x \\
+y
+\end{pmatrix}
+$ \\
+which implies $ B^T x=\lambda y $ and $ By=\lambda x $ \\
+This implies that 
+$
+\begin{pmatrix}
+0   & B \\
+B^T & 0\
+\end{pmatrix}
+\begin{pmatrix}
+x \\
+-y
+\end{pmatrix}
+=
+\begin{pmatrix}
+-By \\
+B^Tx
+\end{pmatrix}
+=
+\begin{pmatrix}
+-\lambda y \\
+\lambda  x
+\end{pmatrix}
+=
+-\lambda
+\begin{pmatrix}
+\lambda  x \\
+-\lambda y
+\end{pmatrix}
+$ \\
+and thus $
+\begin{pmatrix}
+x \\
+-y
+\end{pmatrix} $
+is an eigenvector of $ A $ with eigenvalue $ - \lambda $. \\
+To conclude the proof, $ k $ linearly independent eigenvector with eigenvalue $ \lambda $ would give $ k $ linearly independent eigenvector with eigenvalue $ - \lambda $, hence the claim
+\qed
+\end{proof}
+\end{proposition}
+This was the proof that the spectrum of a bipartite graph is symmetric around the origin. Now we show that the converse is also true
+\begin{proposition}{\textbf{The spectrum inducing a bipartite graph.}} \\
+If the nonzero eigenvalues of the adjacency matrix $ A $ of $ G=(V,E) $ come in pairs $ \lambda_i, \lambda_j $, with $ \lambda_i = -\lambda_j $, then $ G $ is bipartite
+\begin{proof}
+Let $ k $ be an odd number, it implies that $ \sum_{i=1}^{n} \lambda_{i}^{k} = 0 $. \\
+Note that $ \lambda_1^k, \dots, \lambda_n^k $ are the eigenvalues of $ A^k $. \\
+Observe that the entry of$ A_ij^k $ is the number of length $ k $ walks from $ i $ to $ j $ in $ G $ the length. (it is a simple induction argument).\\
+If $ G $ has an odd cycle of length $ k $, the $ \exists i \in [1,n] : A_ii^k > 0 $ but it would mean that $ \sum_{i=1}^{n} \lambda_{i}^{k} > 0 $.\\
+So we get to an absurd and it is implied that $ G $ cannot contain an odd cycle and so it is bipartite.
+\qed
+\end{proof}
+\end{proposition}	
+
+Apart from the boring and specific case of bipartite graphs this approach can be further generalized to show that:
+$ \lambda_n $ is as close to $ \lambda_1 $ as G is similar to a bipartite graph. \\
+And since bipartite graphs yield large max cuts, this observation will allow to obtain a new approximation algorithm for MAX-CUT.
+
+\subsection{Graphs, matrices and eigenvalues}
+For later algorithmic usage we need a tool that sticks together eigenvalues and optimization problems. The following characterization of eigenvalues is what serves the purpose
+
+\begin{theorem}{\textbf{(Variational characterization of eigenvalues)}}
+	\\
+	Let M $\in\mathbb{R}^{n \times n}$ be a symmetric matrix, and $\lambda_1 \leq \lambda_2 \leq \dots \leq \lambda_n$ be the eigenvalues of M in non-increasing order then:
+	\[
+	\lambda_{k} = \min_{k - dim V} \max_{\textbf{x} \in V - \{\textbf{0}\}} \frac{\textbf{x}^T M \textbf{x}}{\textbf{x}^T \textbf{x}}
+	\]
+	The quantity $ \frac{\textbf{x}^T M \textbf{x}}{\textbf{x}^T \textbf{x}} $ is called \em{Rayleigh quotient} of $ \mathbf{x} $ with respect to $ M $, and we denote it as $ R_M(\mathbf{x}) $.
+\end{theorem}
+
+The three following corollaries make explicit the algorithmic useful part of this characterization.
+
+\begin{corollary}
+	if $ \lambda_1 $ is the smallest eigenvalue of a real symmetric matrix $ M $, then
+	\[ \lambda_1 = \min_{\mathbf{x} \ne \mathbf{0}}R_M(\mathbf{x}) \]
+	Furthermore, every minimizer is an eigenvector of $ \lambda_1 $
+\end{corollary}
+
+\begin{corollary}
+	if $ \lambda_n $ is the largest eigenvalue of a real symmetric matrix $ M $, then
+	\[ \lambda_n = \max_{\mathbf{x} \ne \mathbf{0}}R_M(\mathbf{x}) \]
+	Furthermore, every maximizer is an eigenvector of $ \lambda_n $
+\end{corollary}
+
+\begin{corollary}
+	if $ \lambda_1 $ is the smallest eigenvalue of a real symmetric matrix $ M $, and $ \mathbf{x}_1 $ is an eigenvector of $ \lambda_1 $ then
+	\[ \lambda_2 = \min_{\mathbf{x} \ne \mathbf{0}, \, \mathbf{x} \bot \mathbf{x_1}} R_M(\mathbf{x})  \]
+\end{corollary}
+
+The last one enligths a procedure to iteratively compute all the eigenvalues starting from the smallest.
+
+
+Given an undirected d-regular graph $G=(V,E)$, the approach of spectral graph theory is to associate a symmetric real matrix to $ G $ and to relate the eigenvalues of the matrix to combinatorial properties of G. While an adjacenjy matrix $ A $ such that $ A_{i,j}=1 $ if $ (i,j) \in E $ and $ A_{i,j}=0 $ otherwise, would be the most natural representation of $ G $, what we really need to study cut algorithms is a slight modification of A, that is the Laplacian matrix, defined as
+\begin{definition}{\textbf{Normalized Laplacian}} \\
+The normalized Laplacian matrix of an undirected d-regular graph $ G=(V,E)  $ is
+\[L:= I-\frac{1}{d}A\]
+\end{definition}
+Such a choice is motivated by the fact that if we want to study cuts in graphs, it makes sense to choose a matrix $ M $ such that
+\[\mathbf{x}^TM\mathbf{x} = \sum_{(u,v)\in E}(x_u-x_v)^2\]
+because by using boolean vectors $ \mathbf{x} $ of dimension $ |V| $ we are inducing a partition over the vertices of $ G $ and the right-hand-side of the previous expression is equivalent to count the number of edges that cross the cut.
+Using a sort of reverse engineering process we can see that the matrix with the properties we would like to have is $ dI-A $, that is we subtract to the diagonal matrix whose diagonal values are the degree of the vertices of $ G $, the adjacency matrix $ A $ of $ G $.
+Lastly the matrix is normalized by scaling of a factor $ \frac{1}{d} $ so that all its eigenvalues are in the range $ [0,2] $ so that the rande and the average values of the eigenvalues of $ L $ are independent of the degrees of the nodes.
+
+In addition thanks to the variational characterization of eigenvalues of real symmetric matrices, we can think of the eigenvalues of a matrix as optima of min-max optimization problems in which the cost function is the Rayleigh quotient.
+What we get is a restate of two famous hard problems as relaxations of convex optimization problems.
+The minimization problem whose cost function is the Rayleigh quotient of a normalizad Laplacian matrix of a graphs corresponds to the uniform sparse cut problem, while the maximization problem with the same cost function corresponds to the max cut problem.  
+
+\subsection{First results of spectral graph theory}
+In this section we will see some easy consequences of the definitions given so far and we will build some intuition that will be used in the next section to present an algorithm to compute a better approximation for MAX-CUT.
+
+\begin{theorem}
+Let $ G $ be a d-regular undirected graph, let A be the adjacency matrix of $ G $ and $ L:= I-\frac{1}{d}A $ its normalized Laplacian. Let  $\lambda_1 \leq \lambda_2 \leq \dots \leq \lambda_n$ be the real eigenvalues of $ L $ with multiplicities, in nondecreasing order. Then:
+\begin{enumerate}
+\item $ \lambda_1=0 $ and $ \lambda_n=2 $.
+\item $ \lambda_k=0 $ if and only if $ G $ has at least $ k $ connected components.
+\item $ \lambda_n=2 $ if and only if one of the connected component of $ G $ is bipartite.
+\end{enumerate}
+\begin{proof}
+Glueing together the variational characterization of eigenvalues and the fact the concept of the Rayleigh quotient of $ L $ we get
+\[\lambda_1 
+= \min_{\mathbf{x} \in \mathbb{R}^n \setminus \{\mathbf{0}\}}\frac{\mathbf{x}^TL\mathbf{x}}{\mathbf{x}^T\mathbf{x}} 
+=  \min_{\mathbf{x} \in \mathbb{R}^n \setminus \{\mathbf{0}\}} \frac{\sum_{(u,v) \in E}{(x_u - x_v)^2}}{d \sum_{v}{x_v^2}}\]
+Since this is a ratio between two sum of squares, for sure $\lambda_1 \geq 0 $ \\
+To find the minimum possible value for the smallest eigenvalues it is enough to note that the constant vector $ \mathbf{1} $ makes the numerator of the Rayleigh quotient $ 0 $. So $ 0 $ is the smallest eigenvalue of $ L $ and the n dimensional vector $ \mathbf{1} $
+\\
+\medskip
+\\
+Now for simplicity instead of proving  the second point that is: 
+\\ \medskip
+"$ \lambda_k=0 $ if and only if $ G $ has at least $ k $ connected components."
+\\
+we will just show what are the consequence of $ \lambda_2=0 $, 
+To get the full statement of the second point we repeat the same argument more generally by using the generic min-max formula for $ \lambda_k $. 
+\\
+Now recalling that $ \lambda_2 $ by the variational characterization is equal to
+\[\lambda_2 = \min_{\substack{\mathbf{x} \ne \mathbf{0} \\ \sum_{v \in V} x_v = 0}}  \frac{\sum_{(u,v)\in E}(x_u-x_v)^2}{d \sum_{v \in V} x_v^2 } \]
+
+where $ {\sum_{v \in V} x_v = 0} $ is equivalent to say that we want $ \mathbf{x} $ to be orthogonal to the minimizer we used for $ \lambda_1 $ that is 
+$ \mathbf{1} $. This is needed in order to find the eigenvalues iteratively by exploiting the third corollary of the min-max theorem. \\
+
+So we have 
+\[\lambda_2 = 0 \iff \exists \, \mathbf{x} \ne \mathbf{0} \text{ s.t. } \sum_{v \in V} x_v = 0 \text{ and } \forall (u,v) \in E \, x_u = x_v \] 
+That explicitly means:
+\begin{itemize}
+\item For $ \lambda_2 $ to be zero there must be some vector $ \mathbf{x} $ such that for every edge  with endpoints $ u $ and $ v $, $ x_u = x_v $. \\
+\item This means, by induction, that such a vector has the same value on all the entries that are on the same path. \\
+\item This implies that in every connected component this vector $ \mathbf{x} $ must have the same value in all the entries corresponding to an edge in the same connected component. \\
+\item $ \mathbf{x} $ is not zero but it has to sum to zero which means it must have strictly positive values in some entries and strictly negative values in some other entries. \\
+\item It implies that the graph cannot be connected because there cannot be any path from a vertex that corresponds to a negative entry of $ \mathbf{x} $ to a vertex that corresponds to a positive entry of $ \mathbf{x} $.\\
+\item We can conclude that the graph is disconnected.
+\end{itemize}
+It is left to show the converse: "$ G $ is disconnected $ \implies \lambda_2 = 0 $" \\
+\begin{itemize}
+\item if there are two connected components we can give value $ -1 $ to vertices in one connected component and $ +1 $ to vertices in the other. \\
+\item in this way the vector is non zero and the property $ \forall (u,v) \in E \, x_u = x_v  $ holds. \\
+\item to get that $ \mathbf{x} $ sums to zero it is enough to scale $ \mathbf{x} $ entries giving to vertices is one component the value of the number of vertices in the other component and viceversa.
+\end{itemize}
+
+[$ \mathbf{\lambda_n} $]
+\\
+\\
+It is left to study the greatest eigenvalue of the Laplacian $ \lambda_n $, computable as:
+\[\lambda_n = \max_{\substack{\mathbf{x} \in \mathbb{R}^n \\ \mathbf{x} \ne \mathbf{0}}} \frac{\sum_{(u,v)\in E}(x_u-x_v)^2}{d \sum_{v \in V} x_v^2 } \]
+
+we want to rewrite that numerator using the following identities:
+\[ (x_u - x_v)^2 = x_u^2 -2x_{u}x_{v} + x_v^2 = 2(x_u^2 + x_v^2) - (x_u+x_v)^2 \]
+\[ 2 \mathbf{x}^T\mathbf{x} -\mathbf{x}^T L \mathbf{x} = \frac{1}{d} \sum_{(u,v)\in E}(x_u+x_v)^2 \]
+to obtain
+\begin{align}
+\lambda_n & = \max_{\substack{\mathbf{x} \in \mathbb{R}^n \\ \mathbf{x} \ne \mathbf{0}}} \frac{\sum_{(u,v)\in E}(x_u-x_v)^2}{d \sum_{v \in V} x_v^2 } \\
+          & = \max_{\substack{\mathbf{x} \in \mathbb{R}^n \\ \mathbf{x} \ne \mathbf{0}}} \frac{2d \sum_{v \in V} x_v^2 -\sum_{(u,v)\in E}(x_u+x_v)^2}{d \sum_{v \in V} x_v^2 } \\
+          & = 2 - \min_{\substack{\mathbf{x} \in \mathbb{R}^n \\ \mathbf{x} \ne \mathbf{0}}} \frac{\sum_{(u,v)\in E}(x_u+x_v)^2}{d \sum_{v \in V} x_v^2 } \\
+\end{align}
+from this follows that 
+\[ \lambda_n \leq 2 \]
+and to have $ \lambda_n = 2 $ there must exist a non-zero vector $ \mathbf{x} $ such that 
+\[ \sum_{(u,v)\in E}(x_u+x_v)^2 = 0 \]
+so that we can recap what we have just stated as
+\[\lambda_n = 2 \iff \exists \, \mathbf{x} \ne \mathbf{0} \text{ s.t. } \forall (u,v) \in E \, x_u = -x_v \]
+(assuming that $ G $ is connected) \\
+\begin{itemize}
+\item define $ A:=\{v : x_v > 0\} $ and $ B:=\{v : x_v < 0\} $. \\
+\item the set $ A \cup B  \ne \emptyset $ since $ \mathbf{x} \ne \mathbf{0} $
+\item $ A \cup B $ is either the entire graph or else it is disconnected from the rest of the graph, because otherwise an edge with an endpoint in $ A \cup B $ and an endpoint in its complement $ V - (A \cup B)$ would give a positive contribution to $ \sum_{(u,v)\in E}(x_u+x_v)^2 $.\\
+\item every edge incident on a vertex on $ A $ must have the other endpoint in $ B $, and viceversa.\\
+\item Thus, $ A \cup B$ is a connected component or a collection of connected components of G, which is bipartite into $ A $ and $ B $
+\end{itemize}
+\qed
+\end{proof}
+\end{theorem}
+The usual next step to be taken in spectral graph theory is to give a robust version of this characterization of the extremes of the spectrum of the Laplacian. Robust versions of the structural results, called in the literature Cheeger's inequalities, make it possible interpret fractional solutions of this relaxations (i.e. what if $ \lambda_2 $ is close to $ 0.000000001 $) into significant combinatorial properties of graphs.
