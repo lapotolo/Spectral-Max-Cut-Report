@@ -7,7 +7,7 @@ Spectral graph theory is a branch of graph theory that exploits linear algebra t
 Vectors and matrices are the bread and butter of linear algebra, in addition to a number of useful concepts and algorithms, such as determinants, \textbf{eigenvalues, eigenvectors}, and solutions to systems of linear equations.
 The natural application of linear algebra to graph theory comes up when we try to relate a matrix to a graph and then interpreting linear algebra concepts in the graph-theoretic framework.\\
 The easiest representation of a graph as a matrix is via its \textbf{adjacency matrix}. Such a matrix is symmetric and has dimension $ |V| \times |V| $. Its entries are $ 0 $ or $ 1 $ according to the presence of an edge between the two nodes relative to that element of the matrix.
-It is interesting to think of $ |V| $-dimensional boolean vectors as a bipartition of the vertices that indeed is a \textbf{cut}.  
+It is interesting to think of $ |V| $-dimensional boolean vectors as a bipartition of the vertices, that is a \textbf{cut}.  
 
 \subsection{Basic linear algebra notions}
 Before diving in some of the results coming out from spectral graph theory we quickly review some basic linear algebra definitions and theorems that will be useful in the next part.
@@ -154,8 +154,8 @@ The three following corollaries make explicit the algorithmic useful part of thi
 \end{corollary}
 
 The last one enligths a procedure to iteratively compute all the eigenvalues starting from the smallest.
-
-
+\\
+\\
 Given an undirected d-regular graph $G=(V,E)$, the approach of spectral graph theory is to associate a symmetric real matrix to $ G $ and to relate the eigenvalues of the matrix to combinatorial properties of G. While an adjacenjy matrix $ A $ such that $ A_{i,j}=1 $ if $ (i,j) \in E $ and $ A_{i,j}=0 $ otherwise, would be the most natural representation of $ G $, what we really need to study cut algorithms is a slight modification of A, that is the Laplacian matrix, defined as
 \begin{definition}{\textbf{Normalized Laplacian}} \\
 The normalized Laplacian matrix of an undirected d-regular graph $ G=(V,E)  $ is
@@ -165,11 +165,11 @@ Such a choice is motivated by the fact that if we want to study cuts in graphs, 
 \[\mathbf{x}^TM\mathbf{x} = \sum_{(u,v)\in E}(x_u-x_v)^2\]
 because by using boolean vectors $ \mathbf{x} $ of dimension $ |V| $ we are inducing a partition over the vertices of $ G $ and the right-hand-side of the previous expression is equivalent to count the number of edges that cross the cut.
 Using a sort of reverse engineering process we can see that the matrix with the properties we would like to have is $ dI-A $, that is we subtract to the diagonal matrix whose diagonal values are the degree of the vertices of $ G $, the adjacency matrix $ A $ of $ G $.
-Lastly the matrix is normalized by scaling of a factor $ \frac{1}{d} $ so that all its eigenvalues are in the range $ [0,2] $ so that the rande and the average values of the eigenvalues of $ L $ are independent of the degrees of the nodes.
+Lastly the matrix is normalized by scaling of a factor $ \frac{1}{d} $ so that all its eigenvalues are in the range $ [0,2] $ and the average values of the eigenvalues of $ L $ are independent of the degrees of the nodes.
 
-In addition thanks to the variational characterization of eigenvalues of real symmetric matrices, we can think of the eigenvalues of a matrix as optima of min-max optimization problems in which the cost function is the Rayleigh quotient.
-What we get is a restate of two famous hard problems as relaxations of convex optimization problems.
-The minimization problem whose cost function is the Rayleigh quotient of a normalizad Laplacian matrix of a graphs corresponds to the uniform sparse cut problem, while the maximization problem with the same cost function corresponds to the max cut problem.  
+In addition thanks to the variational characterization of eigenvalues of real symmetric matrices, we can think of the eigenvalues of a matrix as optima of min-max optimization problems in which the cost function is the Rayleigh quotient. \\ \\
+What we get is the reformulation of two famous hard problems as relaxations of convex  discrete optimization problems.
+The minimization problem whose cost function is the Rayleigh quotient of a normalizad Laplacian matrix of a graphs corresponds to the uniform sparsest cut problem, while the maximization problem with the same cost function corresponds to the max cut problem.  
 
 \subsection{First results of spectral graph theory}
 In this section we will see some easy consequences of the definitions given so far and we will build some intuition that will be used in the next section to present an algorithm to compute a better approximation for MAX-CUT.
@@ -219,10 +219,10 @@ It is left to show the converse: "$ G $ is disconnected $ \implies \lambda_2 = 0
 \begin{itemize}
 \item if there are two connected components we can give value $ -1 $ to vertices in one connected component and $ +1 $ to vertices in the other. \\
 \item in this way the vector is non zero and the property $ \forall (u,v) \in E \, x_u = x_v  $ holds. \\
-\item to get that $ \mathbf{x} $ sums to zero it is enough to scale $ \mathbf{x} $ entries giving to vertices is one component the value of the number of vertices in the other component and viceversa.
+\item to get that $ \mathbf{x} $ sums to zero it is enough to scale $ \mathbf{x}'s $ entries assigning to vertices in one component the value of the number of vertices in the other component and viceversa.
 \end{itemize}
 
-[$ \mathbf{\lambda_n} $]
+($ \mathbf{\lambda_n} $)
 \\
 \\
 It is left to study the greatest eigenvalue of the Laplacian $ \lambda_n $, computable as:
@@ -254,4 +254,4 @@ so that we can recap what we have just stated as
 \qed
 \end{proof}
 \end{theorem}
-The usual next step to be taken in spectral graph theory is to give a robust version of this characterization of the extremes of the spectrum of the Laplacian. Robust versions of the structural results, called in the literature Cheeger's inequalities, make it possible interpret fractional solutions of this relaxations (i.e. what if $ \lambda_2 $ is close to $ 0.000000001 $) into significant combinatorial properties of graphs.
+The usual next step to be taken in spectral graph theory is to give a robust version of this characterization of the extremes of the spectrum of the Laplacian. Robust versions of the structural results, called in the literature Cheeger's inequalities, make it possible interpreting fractional solutions of this relaxations (i.e. what if $ \lambda_2 $ is close to $ 0.000000001 $) as significant combinatorial properties of graphs.

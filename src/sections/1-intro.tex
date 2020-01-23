@@ -16,7 +16,7 @@ It is interesting to recall the contrast with the MIN-CUT problem, which admits 
 MAX-CUT as many other real life problems are optimization problems.
 In the standard complexity theory formulation, problems are given in a decisional form, meaning that what is asked is the existence of at least one element in the space of solutions.
 In an optimization framework the task is to build the best solution among all the feasible ones.
-Infact a large number of these optimization problems are known to be in NP-HARD that is no polynomial time, or space, algorithm computing an exact solution is known, and probably it did not even exist.\\
+A large number of these optimization problems are known to be in NP-HARD, that is no polynomial time, or space, algorithm computing an exact solution is known, and probably it did not even exist.\\
 
 However their existence needs to be taken into account since lines of attack serve to deal with their complexity and make them more tractable.
 One possible plan is to exploit the notion of approximate solution.
@@ -29,10 +29,10 @@ More precisely we have:
 	\item a function $ COST: \mathcal{S}(I_{\Pi}) \rightarrow \mathbb{N} $, where $ \mathcal{S}(I_{\Pi})$ is the space of solution of the optimization problem $ \Pi $ with instance $ I $. ($ \mathcal{S}(I_{\Pi}) \rightarrow \mathbb{R} $ in the continuous case)
 \end{itemize}
 The goal becomes finding a procedure that given and instance $ I $ of $ \Pi $ computes an approximation solution $ S $ such that:
-\begin{align}
+\begin{align*}
 	\frac{COST(S)}{COST(S^*)} \leq r && \text{if we have a minimization problem} \\
 	\frac{COST(S^*)}{COST(S)} \leq r && \text{if we have a maximization problem}
-\end{align}
+\end{align*}
 
 In both cases a lower value for $ r $ implies a better algorithm.\\
 In general is difficult to estimate the value of $ COST(S^{*}) $. So as we will see in the proves in the next sections we will need to use an upperbound to $ COST(S^{*}) $ in case of 
