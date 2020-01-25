@@ -51,15 +51,16 @@ looking at how this parameter has been defined we can note that:
 \end{itemize}
 So in a more explicit way we can write
 \[ \beta(\mathbf{y}) = \frac{2E(A,A) + 2E(B,B) + E(A \cup B, V - A \cup B)}{vol(A \cup B)} \]
-Thus this parameter $ \beta(\mathbf{y}) $ stands for the fraction of edges of $ G $ incident to the cut $ C $, induced by the vector $ \mathbf{y} $, that have to be removed to convert $ C $ into a bipartite connected component of $ G $.
+Thus this parameter $ \beta(\mathbf{y}) $ stands for the fraction of edges of $ G $ incident to the cut $ C $, that should be removed to convert $ C $ into a bipartite connected component of $ G $.
 \\ \\
-We can now recast the expression of $ \beta(\mathbf{y}) $ into the combinatorial optimization problem equivalent to the continuous one regarding $ \lambda_n $ by define the \textbf{bipartiteness ratio of the graph $ G $} as
+We can now recast the expression of $ \beta(\mathbf{y}) $ into the combinatorial optimization problem equivalent to the continuous one regarding $ \lambda_n $.\\
+We define the \textbf{bipartiteness ratio of the graph $ G $} as
 \[ \beta(G) = \min_{\substack{\mathbf{y} \in \{-1,0,1\}^n \\ \mathbf{y} \ne \mathbf{0}}} \beta(\mathbf{y}) \]
 
 Smaller values of $ \beta(G) $ corresponds to a smaller number of edges to remove from $ G $ to get a bipartite connected component in $ G $. 
 \\
 \\
-It is left to find how to relate the discrete optimization problem that wants to compute $ \beta(G) $ and the continuos one that aims for $ \lambda_n $.
+It is left to find a robust relation connecting the discrete optimization problem that wants to compute $ \beta(G) $ and the continuos one that aims for $ \lambda_n $.\\
 One of the so called Cheeger's inequalities formalizes this relation binding $ \lambda_n $ to the bipartiteness ratio of the graph $ \beta(G) $.
 
 \begin{theorem}{\textbf{(Cheeger's inequalities for $ \lambda_n $, Trevisan)}}
@@ -125,9 +126,51 @@ All this operations take time  be done in $ \mathcal{O}(d_v) $ and thus repeatin
 \end{proposition}
 
 
-\subsection{Spectral MAX-CUT}
+\subsection{Non trivial approximation algorithm for MAX-CUT}
 Finally we can give an approximation algorithm for MAX-CUT that exploits the procedure to compute $ \beta(G) $.\\
-The idea is to recursively apply that procedure to certain subgraphs of $ G $:
+We call $ maxcut(G) $ the fraction of edges of $ G $ cut by an optimal solution $ S^* $. The link between this notation and the one used in the first section is
+\[ maxcut(G) = \frac{COST(S^*)}{|E|}\]
+We assume $ maxcut(G) = 1-\epsilon $, for any small $ \epsilon > 0 $, meaning that the optimal solution is not cutting all the edges of $ G $ and so $ G $ is not bipartite. 
+\\
+\\
+Assume we have an optimal solution  $ S^* $ for MAX-CUT. \\
+An algorithm that achieves a non trivial approximation ratio for MAX-CUT is based on this idea:
+\begin{itemize}
+	\item if $ COST(S^*) < (1-\epsilon) \cdot |E|$, then use a naive 0.5 approximation algorithm for MAX-CUT;
+	\item if $ COST(S^*) \geq (1-\epsilon) \cdot |E| $ use the the procedure \textbf{QuasiBipartition} to compute $ \beta(G) $;
+\end{itemize}
+The branching choice is justified by the following fact
+\begin{claim}
+Let $S=V, A=S^*, B=V-S^*$ and suppose that
+\[ COST(S^*) \geq (1-\epsilon) \cdot |E|\]
+Then
+\[ \beta(G) \leq \epsilon\]
+\begin{proof}
+\begin{align*}
+\beta(G) \leq \beta(\mathbf{y})  &= \frac{2E(A,A)+2E(B,B)+E(V,V-S)}{vol(S)} \\
+&= \frac{2E(A,A)+2E(B,B)}{vol(V)} \\
+&= \frac{2(|E|- E(A, V-A))}{2|E|} \\
+&\leq \frac{2(|E|- (1- \epsilon)|E|)}{2|E|}\\
+&= \epsilon
+\end{align*}
+\qed
+\end{proof}
+\end{claim}
+
+
+Recalling that by the left part of the Cheeger's inequalities for $ \lambda_n $ we have $\frac{2-\lambda_n}{2} \leq \beta(G) $, we derive $ 2-\lambda_n \leq 2 \epsilon $.\\ \\
+Meaning that
+\[ COST(S^*) \geq (1-\epsilon) \cdot |E| \iff 2-\lambda_n \leq \beta(G) \leq 2 \epsilon\]
+And so know that it is safe to use the procedure \textbf{QuasiBipartition} since the possible values are bounded. \\
+On the other hand it implies that 
+\[ 2-\lambda_n > 2\epsilon \iff COST(S^*) < (1-\epsilon) \cdot |E| \]
+
+So for example using the trivial randomized approximation algorithm we get
+\[ \mathbb{E}[E(C,\bar{C})] = \frac{|E|}{2} = \frac{m}{2} \geq \frac{COST(S^*)}{2(1-\epsilon)} \]
+Thus it is a $ \frac{1}{2(1-\epsilon)} $ approximation.
+
+\subsection{Recursive Spectral Cut}
+In case of graphs such that $ COST(S^*) \geq (1-\epsilon) \cdot |E| $, the idea is to exploit the procedure computing $ \beta(G) $ recursively on subgraphs of $ G $. The steps are:
 \begin{itemize}
 \item find $ \mathbf{y} $ that minimizes $ \beta(G) $;
 \item remove the non-zero vertices from $ G $ (note that this is the safest choice since $ \mathbf{y} $ yields a way to partition them removing the minimum number of violating edges)
@@ -139,7 +182,7 @@ Note that a small volume of the residual graph implies that we already have an a
 Otherwise if the volume is still large, the optimal cut of G is still a good cut in the next residual graph. This last statement implies that $ \lambda_n $ is close to 2 and that we can find a $ \mathbf{y'} $ that gives a small bipartiteness ratio.
 \\ 
 \\
-The \textbf{RecursiveSpectralCut} overall algorithm is the following:
+More precisely the \textbf{RecursiveSpectralCut} overall algorithm is the following:
 \begin{list}{$\bullet$}{}
 	\item take in input $ G = (V,E) $;
 	\item use \textbf{QuasiBipartition} on $ G $ to find the cut $ C $ and the bipartition $ (A,B) $ of $ C $ such that:
@@ -150,83 +193,133 @@ The \textbf{RecursiveSpectralCut} overall algorithm is the following:
 	\end{itemize}
 	\item else
 	\begin{itemize}
-		\item Let $ V' := V - (A \cup B) $ and let $ G' =(V',E')$ be the subgraph induced by $V'$;
-		\item $ (C, V'-C) := $ \textbf{RecursiveSpectralCut}($ G' $)
+		\item let $ V' := V - (A \cup B) = V - C $ and let $ G' =(V',E')$ be the subgraph induced by $V'$;
+		\item $ (C', V'-C') := $ \textbf{RecursiveSpectralCut}($ G' $)
+		\item let $ A', B' $ be the two partitions of the cut  $ C' $  computed by the recursive call on $ G' $
 		\item return the best cut between 
-$ (C \cup A, (V'- C) \cup B) $ and $ (C \cup B, (V'- C) \cup A) $
+		$ (A' \cup A, B' \cup B)$ and $ (A' \cup B, B' \cup A)$
+%$ (C \cup A, (V'- C) \cup B) $ and $ (C \cup B, (V'- C) \cup A) $
 \end{itemize}
 \end{list}
+\bigskip
 
-\subsection{Analysis of RecursiveSpectralCut}
-We call $ maxcut(G) $ the fraction of edges of $ G $ cut by an optimal solution $ S^* $. The link between this notation and the one used in the first section is
-\[ maxcut(G) = \frac{COST(S^*)}{|E|}\]
-We assume $ maxcut(G) = 1-\epsilon $, that is the optimal solution is not cutting all the edges of $ G $ and so $ G $ is not bipartite. Then we have
+Trevisan in \cite{trevi-1} proved the following bound
 \begin{lemma} if $ maxcut(G) = 1-\epsilon$, then RecursiveSpectralCut($ G $) finds a cut crossed by at least $(1-4\sqrt{\epsilon})\cdot |E| $ edges.
-\begin{proof}
-the proof is by induction on the number of recursive calls to RecursiveSpectralCut.
-\\
-\\
-\textbf{(base case)}
-\\
-\\
-In the base case the algorithm never recurs. \\
-So it must be the case that $ A \cup B = V $, and so $ (A,B) $ is already a cut of $ G $. \\
-Let count the number of edges of $ G $ not crossing the cut:
-\[
-E(A,A) + E(B,B) \leq \frac{1}{2} \sqrt{2 \cdot (2-\lambda_n)} \cdot vol(V)
-\leq 2\sqrt{\epsilon} \cdot |E| \leq 4 \sqrt{\epsilon} |E|
-\]
-since $ 2-\lambda_n \leq 2\epsilon $ and $ vol(V) = 2|E| $
-\\
-\\
-\textbf{(inductive step)}
-\\
-\\
-We start by assessing the number of uncut edges by the algorithm
-\[ E(A,A) + E(B,B) + \frac{1}{2}E(A \cup B, V') + (|E'| - E'(C,V'-C)) \]
-because we have to count:
-\begin{itemize}
-\item all the edges with both endpoints in $ A $ and both endpoints $ B $;
-\item all the edges of $ G' $ not cut in the recursive step;
-\item half of the edges from $ A \cup B  $ to $ V' $ (because the best way of combining the cuts loses at most half of the edges);
-\end{itemize}
-by using the inductive hypothesis and $ 2-\lambda_n \leq 2\epsilon $ it follows
-\[  E(A,A) + E(B,B) + \frac{1}{2}E(A \cup B, V') \leq \sqrt{\epsilon} \cdot vol(A \cup B) \]
-\[ |E'| - E'(C,V'-C) \leq 4\sqrt{\epsilon'} \cdot |E'| \]
-where $ \epsilon' $ is such that $ maxcut(G') = 1-\epsilon' $
-Call
-\[ \rho\ = \frac{|E|-|E'|}{|E|}\]
-the fraction of edges of $ G $ not in $ G' $.\\
-Then we have:
-\[vol(A \cup B) \leq 2|E-E'| = 2\rho |E| \]
-and
-\[ |E'| = |E| \cdot (1-\rho) \]
-Recalling that the number of edges not cut by the optimal cut of $ G' $ is at most the number of edges not cut by the optimal cut of $ G $, given that $ G' $ is a subgraph of $ G $, follows that
-\[ \epsilon'|E'| \leq \epsilon|E| \implies \epsilon' \leq \epsilon \cdot \frac{|E|}{|E|} = \epsilon \cdot \frac{1}{1- \rho} \]
-The total number of edges not cut by the algorithm is at most
+	\begin{proof}
+		the proof is by induction on the number of recursive calls to RecursiveSpectralCut.
+		\\
+		\\
+		\textbf{(base case)}
+		\\
+		\\
+		In the base case the algorithm never recurs. \\
+		So it must be the case that $ A \cup B = V $, and so $ (A,B) $ is already a cut of $ G $. \\
+		Counting the number of edges of $ G $ not crossing the cut:
+		\begin{align*}
+		E(A,A) + E(B,B) + \overbrace{E(C, V-C)}^{0\,since\, V=C} & \leq \frac{1}{2} \sqrt{2 \cdot (2-\lambda_n)} \cdot vol(V) \\
+& \leq 2\sqrt{\epsilon} \cdot 2|E| \\
+& \leq 4 \sqrt{\epsilon} |E|
+		\end{align*}
 
-\[ \sqrt{\epsilon} \cdot vol(A \cup B) + 4\sqrt{\epsilon'} \cdot |E'| \]
-\[ \leq \sqrt{\epsilon} \cdot 2\rho|E| + 4\sqrt{\epsilon \cdot (1 - \rho)} |E| \]
-\[\leq 4\sqrt{\epsilon} |E| \]
-where in the last line we used
-\[  4\sqrt{\epsilon}|E| =  2 \rho + 4 \sqrt{1- \rho} \leq 4 \]
-which follows from
-\[ \sqrt{1- \rho} \leq \sqrt{(1- \frac{\rho}{2})^2} = 1- \frac{\rho}{2} \]
-
-We can conclude that the total number of edges cut is at most 
-\[ |E| - \#\text{uncut edges} = |E|- 4\sqrt{\epsilon}|E| = (1 - 4\sqrt{\epsilon})|E|  \]
-\qed
-\end{proof}
+		since $ 2-\lambda_n \leq 2\epsilon $ and $ vol(V) = 2|E| $
+		\\
+		\\
+		\textbf{(inductive step)}
+		\\
+		\\
+		We start by assessing the number of uncut edges by the algorithm
+		\[ (E(A,A) + E(B,B))
+		+ \frac{1}{2}E(A \cup B, V') 
+		+ \underbrace{(|E'| - E'(C,V'-C))}_\text{edges cut in the recursion} 
+		\]
+		because we have to count:
+		\begin{enumerate}
+			\item all the edges with both endpoints in $ A $ and both endpoints $ B $;
+			\item half of the edges from $ A \cup B  $ to $ V' $.\\
+			This is due to the fact that the best way of combining the cuts loses at most half of the edges. \\
+			Infact every edge in $ E(A \cup B, V') $ either “stays on the same side”, going from A to $ A' $ or
+			B to B' , or else “crosses sides”, going from A to $ B' $ or B to $ A' $ .\\
+			That means that one of the above cuts must contain at least 1/2 the edges in $ E(A \cup B, V') $;
+			\item all the edges of $ G' $ not cut in the recursive step;
+		\end{enumerate}
+		by using $ 2-\lambda_n \leq 2\epsilon $ it follows
+		\[  E(A,A) + E(B,B) + \frac{1}{2}E(A \cup B, V') \leq \sqrt{\epsilon} \cdot vol(A \cup B) \]
+		and by the inductive hypothesis
+		\[ |E'| - E'(C,V'-C) \leq 4\sqrt{\epsilon'} \cdot |E'| \]
+		where $ \epsilon' $ is such that $ maxcut(G') = 1-\epsilon' $ \\\\
+		Call the fraction of edges of $ G $ not in $ G' $
+		\[ \rho\ = \frac{|E|-|E'|}{|E|}\]
+		Then we have:
+		\[vol(A \cup B) \leq 2|E-E'| = 2\rho |E| \]
+		and
+		\[ |E'| = |E| \cdot (1-\rho) \]
+		Recalling that the number of edges not cut by the optimal cut of $ G' $ is at most the number of edges not cut by the optimal cut of $ G $, given that $ G' $ is a subgraph of $ G $, follows that
+		\[ \epsilon'|E'| \leq \epsilon|E| \implies \epsilon' \leq \epsilon \cdot \frac{|E|}{|E|} = \epsilon \cdot \frac{1}{1- \rho} \]
+		The total number of edges not cut by the algorithm is at most
+		
+		\[ \sqrt{\epsilon} \cdot vol(A \cup B) + 4\sqrt{\epsilon'} \cdot |E'| \]
+		\[ \leq \sqrt{\epsilon} \cdot 2\rho|E| + 4\sqrt{\epsilon \cdot (1 - \rho)} |E| \]
+		\[\leq 4\sqrt{\epsilon} |E| \]
+		where in the last line we used
+		\[  4\sqrt{\epsilon}|E| =  2 \rho + 4 \sqrt{1- \rho} \leq 4 \]
+		which follows from
+		\[ \sqrt{1- \rho} \leq \sqrt{(1- \frac{\rho}{2})^2} = 1- \frac{\rho}{2} \]
+		
+		We can conclude that the total number of cut edges is at most 
+		\[ |E| - \#\text{uncut edges} = |E|- 4\sqrt{\epsilon}|E| = (1 - 4\sqrt{\epsilon})|E|  \]
+		\qed
+	\end{proof}
 \end{lemma}
 
-\subsection{Interpreting the spectral approximation of MAX-CUT}
-This algorithm works well in case of graphs that are almost bipartite, that is when $ \epsilon $ is small, since this would imply that $ maxcut(G) $ is very close to $ 1 $, we know that $ maxcut(G) =1$ in case of a bipartite $ G $.\\
-For small $ \epsilon $ the quality of the solution found by this spectral algorithm is close to the one achieved by the SDP algorithm. Infact SDP-MAX-CUT algorithm finds a cut crossed by about $ (1- \frac{2}{\pi}\sqrt{\epsilon})|E|  $ edges, that for small $ \epsilon $ it is $ \approx (1-4\sqrt{\epsilon})|E|$. The SDP-algorithm bound is the best possible polynomial time approximation if we assume the unique games conjecture and $ P \ne NP $.
+Going a bit looser with the bounds we get a 0.529 approximation algorithm for MAX-CUT. We follow a similar argument assuming the same procedure explained above.
+\\
+\\
+Assume we are in the case $ COST(S^*) \geq (1-\epsilon)\cdot |E|$.\\
+We use \textbf{RecursiveSpectralCut} to compute an approximate solution $ S $ for MAX-CUT on the graph $ G $.
+
+\[ COST(S) \geq E(A,B) + \frac{1}{2}E(C,V-C) + COST(S-C) \]
+where $ COST(S-C) $, with some abuse of notation, is the cost of MAX-CUT on the residual graph $ G'=(V',E') $.
+
+By some simple combinatorial calculations we upper bound the optimal solution with
+\begin{align*}
+COST(S^*) &\leq E(A,A) + E(B,B) + E(A,B) + E(C,V-C) + COST(S^*-C)\\
+& = \frac{1}{2} vol(C) + \frac{1}{2}E(C,V-C) + COST(S^*-C)
+\end{align*}
+Then 
+\begin{align*}
+\frac{COST(S)}{COST(S^*)} & \geq \min \bigg\{ \frac{E(A,B)}{\frac{1}{2}vol(C)}
+	                              , \frac{\frac{1}{2}E(C,V-C)}{\frac{1}{2}E(C,V-C)}
+	                              , \frac{COST(S-C)}{COST(S^*-C)}\bigg\}\\
+&=\min \bigg\{ \frac{E(A,B)}{\frac{1}{2}vol(C)}
+             , \frac{COST(S-C)}{COST(S^*-C)}\bigg\}
+\end{align*}
+Using the hypothesis $2-\lambda_n \leq 2\epsilon $ and the fact
+\[ \frac{2E(A,A) + 2E(B,B) + E(C, V - C)}{vol(A \cup B)} = \frac{vol(C)-2E(A,B)}{vol(C)} \]
+\\
+\\
+we bound $ \frac{E(A,B)}{\frac{1}{2}vol(C)} $ by
+\[ 2 \sqrt{\epsilon} \geq \frac{vol(C)-2E(A,B)}{vol(C)} = 1 - \frac{2E(A,B)}{vol(C)} \implies \frac{E(A,B)}{\frac{1}{2}vol(C)} \geq 1-2\sqrt{\epsilon} \]
+\\
+\\
+While to bound $  \frac{COST(S-C)}{COST(S^*-C)} $ it is enough to note that the same reasoning must hold true for the residual graph $ G-C $.\\
+However we should take into account that at some point during the recursion residual graphs may have $ 2-\lambda_n \geq 2\epsilon $. In these cases the approximation ratio is $ \frac{1}{2(1-\epsilon)} $ since the procedure uses a trivial approximation algorithm.
+\\
+\\
+Putting the pieces together we get
+\[\frac{COST(S)}{COST(S^*)} \geq \min \bigg\{ 1-2\sqrt{\epsilon}, \frac{1}{2(1-\epsilon)} \bigg\}\]
+The two expressions are equal for $ \epsilon \approx 0.0554 $. At that point the ratio is 0.529. So this procedures yields at least a 0.529 approximation.
+
+
+\subsection{Conclusions}
+\textbf{RecursiveSpectralCut} on its own works well in case of graphs that are almost bipartite, that is when $ \epsilon $ is small, since this would imply that $ maxcut(G) $ is very close to $ 1 $.
 \\
 \\
 Unfortunately in case of large $ \epsilon $ the spectral algorithms does not find nice cuts. \\
-Infact if $ \epsilon > \frac{1}{64} $, the algorithm guarantees to cut less then half the edges of the graph, and this is worse than the three trivial approximation algorithms' performances we saw in the first section.
+Infact if $ \epsilon > \frac{1}{64} $, the algorithm guarantees to cut less then half the edges of the graph, and this is worse than the performances of the three trivial approximation algorithms we saw.
 \\
 \\
-However it is possible to prove that by always choosing the best cut between the one returned by this spectral algorithm and the one returned by the greedy algorithm, we can deal with large $ \epsilon $ too, achieving an approximation ratio equal to 0.531. That is indeed better than the trivial one.
-Moreover the results of a tighter analysis on the same algorithm, led by Soto in 2018 \cite{soto-improv}, reached an approximation ration equal to 0.614247.
+Trevisan proved that by always choosing the best cut between the one returned by \textbf{RecursiveSpectralCut} and the one returned by the greedy algorithm, we can deal with large $ \epsilon $ as well, achieving an approximation ratio equal to 0.531. That is indeed better than the trivial one. Goemans\cite{goe} in 1995 gave a 0.878-approximation algorithm for MAX CUT by using semidefinite programming. Even if SDP approaches yielded better approximation ratio so far, it may be fruitful to further investigate spectral approaches. Infact computing eigenvectors is lot easier both in terms of speed and memory than solving semidefinite programming; experimental results indicate that this algorithm performs better than the SDP-based algorithm both in time spent and result quality.
+\\
+\\
+Finally both spectral graph theory and spectral MAX-CUT are hot research fields. It is not known if there is a "one-shot" spectral algorithm not using recursive calls. (recursion makes it hard to analyze the algorithm, and forces recomputation of eigenvectors.)\\
+The bound proved in \cite{trevi-1} is not the tightest. In a recent research \cite{soto-improv}, Soto proved that the same procedure reaches an approximation ratio up to 0.614247.

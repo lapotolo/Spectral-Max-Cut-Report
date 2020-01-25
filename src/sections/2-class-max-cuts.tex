@@ -158,11 +158,11 @@ Last but not least it is time for the simple randomized algorithm that provide t
 	  \end{cases}
 \end{equation*}
 then by random indicator variables properties it follows:
-\[ \mathbf{E}[X_{e}] = Pr(X_{e} = 1) = \frac{1}{2} \]
+\[ \mathbb{E}[X_{e}] = Pr(X_{e} = 1) = \frac{1}{2} \]
 so that we can estimate the expected number of edges crossing the cut as:
 \begin{align*}
-\mathbf{E}[E(C,\bar{C})] & = \mathbf{E}[\sum_{e \in E} X_{e}] \\
-						 & = \sum_{e \in E} \mathbf{E}[X_{e}] \\
+\mathbb{E}[E(C,\bar{C})] & = \mathbb{E}[\sum_{e \in E} X_{e}] \\
+						 & = \sum_{e \in E} \mathbb{E}[X_{e}] \\
 						 & = \frac{|E|}{2} = \frac{m}{2}
 \end{align*}
 \qed
@@ -196,4 +196,3 @@ In 1994 Goemans and Williamsons gave a 0.828-approximation algorithm, by exploit
 Moreover assuming the "unique games conjecture" this approximation ratio is optimal unless $P=NP$.
 The treatment of this last SDP approximation is out of the scope of this survey. 
 In the next sections the spotlights will be on the spectral approach devised by Trevisan in 2008.
-His algorithm achieved an approximation ration of 0.513. The analysis was improved by Soto up to a ratio of at least 0.614 2018.
