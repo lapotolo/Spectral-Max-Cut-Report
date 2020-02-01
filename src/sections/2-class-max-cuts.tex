@@ -55,8 +55,9 @@ The two following theorems state formally termination and approximation ratio ac
   
   Here and in the rest of this section we take $|E|=m $ as $COST(UB)$ so that in all the three theorems stating that the achieved approximation ratio is 2, the proof reduces to show that:
   \[ \frac{m}{COST(S)} \leq 2 \]
-  To conclude the proof we need to observe that for each node $v \in V$ is guaranteed that at least $\frac{d_v}{2}$ incident edges to $ v $ belongs to $|E(C,\bar{C})|$, where $ d_v $ is the degree of the node $ v $ that is the number of incident edges to $ v $.\\
-  Now let the cut at the local optimum computed by the local search procedure be $ S $ and take a node $ u $ with degree $ d_u $. If the vertex $u$ is in the cut for the solution $S$ then some of its neighbors are in $C$ and some other in $\bar{C}$ but for sure there cannot be more then half the degree of $u$ edges crossing the cut otherwise $S$ would not be a local optimum.
+  To conclude the proof we need to observe that for each node $v \in V$ is guaranteed that at least $\frac{d_v}{2}$ incident edges to $ v $ belongs to $|E(C,\bar{C})|$, where $ d_v $ is the degree of the node $ v $ 
+  \footnote{number edges incident to $ v $.}.\\
+  Now let the a cut at the local optimum be $ C $ and take a node $ u $ with degree $ d_u $. If the vertex $u$ is in the cut for some solution $S$ then some of its neighbors are in $C$ and some other in $\bar{C}$ but for sure there cannot be more then half the degree of $u$ edges crossing the cut, otherwise $C$ could not be a local optimum.
   So we can write:
   \begin{align*}
   cut\, size & = COST(S) \\
@@ -116,7 +117,7 @@ For greedy MAX-CUT the two subsets of $V$ induced by the notion of cut of a grap
   	when $ v_i $ is added to a bin, at least $ \frac{r_i}{2}$ edges are added to the cut.\\
   	This is due to the fact that the other vertices
   	adjacent to the $ r_i $ edges that $ v_i $ is responsible for have already been assigned to either $C$ or $ \bar{C} $. 
-  	The set which contains the most endpoint vertices of these r i edges must contain at least $ \frac{r_i}{2} $ endpoint vertices.
+  	The set which contains the most endpoint vertices of these $ r_i $ edges must contain at least $ \frac{r_i}{2} $ endpoint vertices.
 
   \end{claim}
   Since we are greedy $ v_i $ must go to the other set. Thus it is proved that every time we process a responsible vertex we are adding at least $ \frac{r_i}{2}$ edges to the cut. Concluding:
@@ -131,7 +132,7 @@ For greedy MAX-CUT the two subsets of $V$ induced by the notion of cut of a grap
 % -------------------------------------------------------------------------
 
 \subsection{Randomized}
-Last but not least it is time for the simple randomized algorithm that provide the same approximation ration with respect to the other two already presented.
+Last but not least it is time for a simple randomized algorithm that provide the same approximation ratio with respect to the other two above.
 
 \begin{algorithm}[H]
 	\SetAlgoLined
@@ -153,7 +154,7 @@ Last but not least it is time for the simple randomized algorithm that provide t
 \begin{equation*}
 	X_{e} = 
 	  \begin{cases}
-	    1 &  \text{if} e \in E(C,\bar{C}), \forall e \in E,\\
+	    1 &  \text{if } e \in E(C,\bar{C}), \forall e \in E,\\
         0 &  \text{otherwise}.
 	  \end{cases}
 \end{equation*}
@@ -178,12 +179,12 @@ The take home message here is that if we cannot obtain better approximation resu
 	\[COST(S^{*}) \approx \frac{m}{2} = \frac{1}{2} COST(UB) \]
 \end{claim}
 \begin{proof}
-Consider $ K_{2n} $, the complete graph on $ 2n $ nodes. By a trivial combinatory count we get that $ m = |E|= n(2n-1) \approx 2n^2 $\\
+Consider $ K_{2n} $, the complete graph on $ 2n $ nodes. By a trivial combinatory count we get that $ m = |E|= \frac{2n(2n-1)}{2} \approx 2n^2 $.\\
 For any cut in $ K_{2n} $ such that $ |C|= z $, $ |\bar{C}|= 2n-z $ each of the vertices in $ C $ has $ 2n-z $ edges crossing the cut to reach its other endpoint that stays in $ \bar{C} $.\\
 Hence the total number of edges in the cut is $ z(2n-z) $.\\
-This quantity is maximized for $ i=n $ and thus the largest cut in the graph has $ n^2 $ edges.\\
+This quantity is maximized for $ z=n $ and thus the largest cut in the graph has $ n^2 $ edges.\\
 Now recalling that $ COST(UB)=m $ and for $ K_{2n} $ we have $ m=n(2n-1) $ it follows:
-\[ \frac{COST(UB)}{COST(S^{*})} = \frac{n(2n-1)}{n^2} = 2 - \frac{1}{n}  \]
+\[ \frac{COST(UB)}{COST(S)} \leq \frac{n(2n-1)}{n^2} \approx 2 - \frac{1}{n}  \]
 Which gets arbitrary close to $ 2 $ as $ n $ increases. \\
 We can conclude that by keeping $ COST(UB)=m $ in some cases even the optimal algorithm could never be considered better than a 2-approximation.
 \qed

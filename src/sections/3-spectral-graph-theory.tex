@@ -37,7 +37,16 @@ Let M $\in \mathbb{R}^{n \times n}$ be a symmetric matrix with real-valued entri
 \end{theorem}
 
 \subsection{Graph spectrum and bipartite graphs}
-The most common matrices we will associate to graphs will be symmetric and real, so we would apply the spectral theorem on them to build an orthonormal basis of eigenvectors. However it is not granted that these eigenvalues would provide any information about graph properties. The following example instead shows how the eigenvalues of a matrix are a mirror of the graph's topology
+The most common matrices we will associate to graphs are symmetric and real.
+Given a graph $ G=(V,E) $, we can define the adjacenjy matrix $ A $ of $ G $ as a symmetric square matrix whose dimension is $ |V| \times |V| $ and such that
+\begin{equation*}
+A_{i,j} = \begin{cases}
+1 & \text{if } (i,j) \in E \\
+0 & \text{otherwise }\\
+\end{cases}
+\end{equation*}
+
+Symmetricity is the key property that would let us apply the spectral theorem ensuring the existence of an orthonormal basis of eigenvectors. However it is not granted that these eigenvalues would provide any information about graph properties. The following example instead shows how the eigenvalues of a matrix are a mirror of the graph's topology
 
 \begin{proposition}{\textbf{Spectral characterization of bipartite graphs.}} \\
 If $ G $ is a bipartite graph and $ \lambda $ is an eigenvalue of $ A $, adjacency matrix of $ G $, with multiplicity $ k $, then $ -\lambda $ is an eigenvalue of $ A $ with multiplicity $ k $.
@@ -85,14 +94,14 @@ B^Tx
 \end{pmatrix}
 =
 \begin{pmatrix}
--\lambda y \\
-\lambda  x
+-\lambda x \\
+\lambda  y
 \end{pmatrix}
 =
 -\lambda
 \begin{pmatrix}
-\lambda  x \\
--\lambda y
+x \\
+y
 \end{pmatrix}
 $ \\
 and thus $
@@ -111,8 +120,8 @@ If the nonzero eigenvalues of the adjacency matrix $ A $ of $ G=(V,E) $ come in 
 \begin{proof}
 Let $ k $ be an odd number, it implies that $ \sum_{i=1}^{n} \lambda_{i}^{k} = 0 $. \\
 Note that $ \lambda_1^k, \dots, \lambda_n^k $ are the eigenvalues of $ A^k $. \\
-Observe that the entry of$ A_ij^k $ is the number of length $ k $ walks from $ i $ to $ j $ in $ G $ the length. (it is a simple induction argument).\\
-If $ G $ has an odd cycle of length $ k $, the $ \exists i \in [1,n] : A_ii^k > 0 $ but it would mean that $ \sum_{i=1}^{n} \lambda_{i}^{k} > 0 $.\\
+Observe that an arbitrary entry in row $ i $ and column $ j $ of $ A^k $ is equal to the number of length $ k $ walks from $ i $ to $ j $ in $ G $.\\
+If $ G $ has an odd cycle of length $ k $, then $ \exists\, i \in [1,n] : A_{i,i}^k > 0 $ but it would mean that $ \sum_{i=1}^{n} \lambda_{i}^{k} > 0 $.\\
 So we get to an absurd and it is implied that $ G $ cannot contain an odd cycle and so it is bipartite.
 \qed
 \end{proof}
@@ -156,7 +165,7 @@ The three following corollaries make explicit the algorithmic useful part of thi
 The last one enligths a procedure to iteratively compute all the eigenvalues starting from the smallest.
 \\
 \\
-Given an undirected d-regular graph $G=(V,E)$, the approach of spectral graph theory is to associate a symmetric real matrix to $ G $ and to relate the eigenvalues of the matrix to combinatorial properties of G. While an adjacenjy matrix $ A $ such that $ A_{i,j}=1 $ if $ (i,j) \in E $ and $ A_{i,j}=0 $ otherwise, would be the most natural representation of $ G $, what we really need to study cut algorithms is a slight modification of A, that is the Laplacian matrix, defined as
+Given an undirected d-regular graph $G=(V,E)$, the approach of spectral graph theory is to associate a symmetric real matrix to $ G $ and to relate the eigenvalues of the matrix to combinatorial properties of G. While an adjacenjy matrix $ A $ would be the most natural representation of $ G $, what we really need to study cut algorithms is a slight modification of A, that is the Laplacian matrix, defined as
 \begin{definition}{\textbf{Normalized Laplacian}} \\
 The normalized Laplacian matrix of an undirected d-regular graph $ G=(V,E)  $ is
 \[L:= I-\frac{1}{d}A\]
@@ -195,7 +204,7 @@ Now for simplicity instead of proving  the second point that is:
 \\ \medskip
 "$ \lambda_k=0 $ if and only if $ G $ has at least $ k $ connected components."
 \\
-we will just show what are the consequence of $ \lambda_2=0 $, 
+we will just show what are the consequence of $ \lambda_2=0 $.
 To get the full statement of the second point we repeat the same argument more generally by using the generic min-max formula for $ \lambda_k $. 
 \\
 Now recalling that $ \lambda_2 $ by the variational characterization is equal to
